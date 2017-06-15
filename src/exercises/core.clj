@@ -103,7 +103,11 @@
 ;;T: good use of composition, but inefficient execution.  Relies on next-prime, which we know will continually re-compute all primes (memoryless, no caching of previous primes....)
 (defn nth-prime [n] (last (take n (iterate next-prime 2))))
 
-;;Tom: Why is this sorted? 
+;;Tom: Why is this sorted?
+;;Also, why are you using a hash-set for the accumulator to grow-primes?
+;;you're going to create a couple of problems that way, particularly using
+;;calls to (last ...) on an unordered container like a hash-set.  Rethink
+;;this...
 (defn primes-upto-n [n]
   (sort (filter #(<= % n) (reduce grow-primes #{2}
                                   (take n (iterate #(+ % 2) 3))))))
@@ -194,7 +198,7 @@
 
 ;;T: version with type-hinting...using with-open to eliminate the need for
 ;;manual resource management.  When wrapping java objects, it's common to
-;;look up the api via ala
+;;look up the api via javadocs ala
 ;;https://docs.oracle.com/javase/7/docs/api/java/io/BufferedWriter.html
 (defn hinted-write-file [filename data]
   (with-open [^java.io.BufferedWriter w (clojure.java.io/writer  filename)]
