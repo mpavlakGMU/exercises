@@ -1,56 +1,58 @@
 (ns exercises.core)
-(comment ;======= Olld implementation using loops ===========
-  (defn divides? [n p]
-    (= 0 (mod n p)))
-  (defn prime? [n & [primes]]
-    (if primes
-      (not (some #(divides? n %) primes))
-      (loop [i 3]
-        (cond
-          (< n 2) false
-          (= n 2) true
-          (>= i n) true
-          (even? n) false
-          (= 0 (mod n i)) false
-          (<= (mod n i)) (recur (+ i 2))))))
-  (defn next-prime [n]
-    (loop [i n]
-      (if (and (prime? i) (not (= n i)))
-        i
-        (recur (if (even? i)
-                 (inc i)
-                 (+ i 2))))))
-  (defn grow-primes [primes]
-    (conj primes (next-prime (last primes))))
-  (defn first-n-primes [n]
-    (loop [i 0 primes [2]]
-      (if-not (< i (- n 1))
-        primes
-        (recur (inc i) (grow-primes primes)))))
-  (defn primes-upto-n [n & [primes]]
-    (loop [i 0 primes (if primes
-                        primes
-                        [2])]
-      (if (< n (next-prime (last primes)))
-        primes
-        (recur (inc i) (grow-primes primes)))))
-  (defn primes-between [min max]
-    (vec (filter #(< min %) (primes-upto-n max))))
-  (defn primes-between [min max]
-    (->>
-     (primes-upto-n max)
-     (filter #(< min %))
-     (vec)))
-  (defn get-factor [n primes]
-    (loop [i (last primes)]
-      (if (and (divides? n i) (<= 1 i) (prime? i))
-        i
-        (recur (dec i)))))
-  )
+;======= Old implementation using loops ===========
+(defn divides? [n p]
+  (= 0 (mod n p)))
+(defn prime? [n & [primes]]
+  (if primes
+    (not (some #(divides? n %) primes))
+    (loop [i 3]
+      (cond
+        (< n 2) false
+        (= n 2) true
+        (>= i n) true
+        (even? n) false
+        (= 0 (mod n i)) false
+        (<= (mod n i)) (recur (+ i 2))))))
+(defn next-prime [n]
+  (loop [i n]
+    (if (and (prime? i) (not (= n i)))
+      i
+      (recur (if (even? i)
+               (inc i)
+               (+ i 2))))))
+(defn grow-primes [primes]
+  (conj primes (next-prime (last primes))))
+(defn first-n-primes [n]
+  (loop [i 0 primes [2]]
+    (if-not (< i (- n 1))
+      primes
+      (recur (inc i) (grow-primes primes)))))
+(defn primes-upto-n [n & [primes]]
+  (loop [i 0 primes (if primes
+                      primes
+                      [2])]
+    (if (< n (next-prime (last primes)))
+      primes
+      (recur (inc i) (grow-primes primes)))))
+(defn primes-between [min max]
+  (vec (filter #(< min %) (primes-upto-n max))))
+(defn primes-between [min max]
+  (->>
+   (primes-upto-n max)
+   (filter #(< min %))
+   (vec)))
+(defn get-factor [n primes]
+  (loop [i (last primes)]
+    (if (and (divides? n i) (<= 1 i) (prime? i))
+      i
+      (recur (dec i)))))
 
 ;;===New implementation =======================
+;;Tom: this is out of order.  primes-upto-n needs to be forward-declared
+;;or this comes later.
 (defn prime? [n] (= n (last (primes-upto-n n))))
 (defn nth-prime [n] (last (take n (iterate next-prime 2))))
+;;Tom: Why is this sorted? 
 (defn primes-upto-n [n]
   (sort (filter #(<= % n) (reduce grow-primes #{2}
                                   (take n (iterate #(+ % 2) 3))))))
@@ -71,7 +73,7 @@
 ;;=====================
 (defn number-to-vector [n] (into [] (seq (str n))))
 (defn vector-to-number [v] (Integer. (reduce str v)))
-(defn rotate-vec [v] (into (vector (lat v)) (pop v)))
+(defn rotate-vec [v] (into (vector (last v)) (pop v)))
 (defn rotate-digits [n] (->>
                          (number-to-vector n) (rotate-vec) (vector-to-number)))
 (defn digits [n] (count (str n)))
@@ -80,11 +82,11 @@
 
 ;;=========Euler problems==================================
 (defn ! [n] ;;Factorial of N
-  (reduce *' (ap inc (range n))))
+  (reduce *' (map inc (range n))))
 
 (defn swap [v i & j]
   (if j
-    (replace {(nth v (mod i (count v))) (nth v (mod (first j) P(count v)))
+    (replace {(nth v (mod i (count v))) (nth v (mod (first j) (count v)))
               (nth v (mod (first j) (count v))) (nth v (mod i (count v)))} v)
     (replace {(nth v (mod i (count v))) (nth v (mod (inc i) (count v)))
               (nth v (mod (inc i) (count v))) (nth v (mod i (count v)))} v)))
@@ -97,7 +99,7 @@
 ;;=========File IO=============
 
 (defn read-file [filename]
-  (import java.util.scanner java.io.File)
+  (import java.util.Scanner java.io.File)
   (let [scan (Scanner. (File. filename))]
     (.useDelimiter scan "\r|\n")
     (filter #(not (= % ""))
@@ -120,7 +122,7 @@
 
 (defn read-delimited [filename del]
   (let [lines (read-file filename)]
-    (for [l lines :let [data (clojure.strin/split l (re-pattern dl))]] data)))
+    (for [l lines :let [data (clojure.string/split l (re-pattern del))]] data)))
 
 (defn write-2d [filename data del1 del2]
   (import java.io.PrintWriter java.io.File)
