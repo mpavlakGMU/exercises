@@ -62,7 +62,7 @@
 
 (defn primes-upto-n [n]
   (loop [nums (range 2 n) primes []]
-    (if (> (*' (first nums) (first numes)) n)
+    (if (> (*' (first nums) (first nums)) n)
       (into primes nums)
       (recur
        (filter #(not= 0 (mod % (first nums))) nums)
