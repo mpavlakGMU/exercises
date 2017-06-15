@@ -12,7 +12,7 @@
           (>= i n) true
           (even? n) false
           (= 0 (mod n i)) false
-          (< = (mod n i)) (recur (+ i 2))))))
+          (<= (mod n i)) (recur (+ i 2))))))
   (defn next-prime [n]
     (loop [i n]
       (if (and (prime? i) (not (= n i)))
@@ -49,7 +49,7 @@
   )
 
 ;;===New implementation =======================
-(defn prime? [n] (= n (ast (primes-upto-n n))))
+(defn prime? [n] (= n (last (primes-upto-n n))))
 (defn nth-prime [n] (last (take n (iterate next-prime 2))))
 (defn primes-upto-n [n]
   (sort (filter #(<= % n) (reduce grow-primes #{2}
