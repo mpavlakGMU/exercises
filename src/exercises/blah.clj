@@ -81,3 +81,14 @@
        (take 10)
        (map :acc)))
 
+;;multiple arity /w recursive defaults
+(defn add-them
+  ([x y z] (+ x y z))
+  ([x y ]  (add-them x y 0))
+  ([x]     (add-them x 0 0)))
+
+;;this throws errors
+#_(defn add-them
+    ([x y z] (+ x y z))
+    ([x y ]  (recur x y 0))
+    ([x]     (recur x 0 0)))
