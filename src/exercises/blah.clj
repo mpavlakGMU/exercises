@@ -44,3 +44,40 @@
              (conj history res)])
           [m [m]])
         (range 10))
+
+;;recursively with explicit args...
+(defn count-to-ten [n history]
+  (if (= n 10) [n history]
+      (recur (unchecked-inc n) (conj history n))))
+
+
+;;conditional processing
+(reduce (fn [acc n]
+          (if (odd? n)
+            acc
+            (update acc 4 conj (rand-int 1000))))
+        m
+        (range 10))
+
+(reduce (fn [acc n]
+            acc
+            (update acc 4 conj (rand-int 1000)))
+        m
+        (filter even? (range 10)))
+
+(->> (range 10)
+     (filter even?)     
+     (reduce (fn [acc n]
+               acc
+               (update acc 4 conj (rand-int 1000)))
+             m))
+
+;;using iterate
+(let [m {4 #{2}, 9 #{3}}] 
+  (->> (iterate (fn [{:keys [acc n] :as m}]
+                  {:acc (update acc 4 conj n)
+                   :n   (inc n)})
+                {:acc m :n 8})
+       (take 10)
+       (map :acc)))
+
