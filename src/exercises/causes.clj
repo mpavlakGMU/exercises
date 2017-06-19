@@ -9,3 +9,5 @@
 ;; source word as any candidate word that is a friend of the source word,
 ;; or a friend of the candidate word.  Given the provided set of words,
 ;; what is the size of the “social network” for the word “causes” ?
+
+;;[you can find the word data in ./resources/words.list] 
