@@ -92,3 +92,6 @@
     ([x y z] (+ x y z))
     ([x y ]  (recur x y 0))
     ([x]     (recur x 0 0)))
+
+;;line stuff
+(let [xs (clojure.string/join \newline (range 100))]
